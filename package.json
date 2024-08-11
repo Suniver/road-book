@@ -10,7 +10,27 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/leaflet": "^1.2.0",
+    "@pinia/nuxt": "^0.5.3",
+    "@primevue/themes": "^4.0.4",
+    "@unocss/nuxt": "^0.61.9",
+    "@unocss/reset": "^0.61.9",
     "nuxt": "^3.12.4",
+    "pinia": "^2.2.1",
+    "primevue": "^4.0.4",
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "@iconify-json/tabler": "^1.1.119",
+    "@primevue/nuxt-module": "^4.0.4",
+    "@unocss/preset-attributify": "^0.61.9",
+    "@unocss/preset-icons": "^0.61.9",
+    "@unocss/preset-tagify": "^0.61.9",
+    "@unocss/preset-uno": "^0.61.9",
+    "@unocss/preset-web-fonts": "^0.61.9",
+    "sass": "^1.77.8"
+  },
+  "overrides": {
     "vue": "latest"
   }
 }
