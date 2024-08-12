@@ -15,6 +15,7 @@
     "@primevue/themes": "^4.0.4",
     "@unocss/nuxt": "^0.61.9",
     "@unocss/reset": "^0.61.9",
+    "flatted": "^3.3.1",
     "nuxt": "^3.12.4",
     "pinia": "^2.2.1",
     "primevue": "^4.0.4",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.1.119",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@primevue/nuxt-module": "^4.0.4",
     "@unocss/preset-attributify": "^0.61.9",
     "@unocss/preset-icons": "^0.61.9",

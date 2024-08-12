@@ -1,10 +1,13 @@
+import { stringify, parse } from "flatted";
 import { defineStore, acceptHMRUpdate } from "pinia";
+
+import { tagList } from "~/data/tags";
 import { cities } from "../data/cities";
 import { resourceList } from "~/data/ressources";
-import type { ICity, ITradeAction, ITripStepCity } from "~/types/city";
-import { tagList } from "~/data/tags";
-import type { IRessource } from "~/types/ressource";
+
 import type { ITag } from "~/types/tags";
+import type { IRessource } from "~/types/ressource";
+import type { ICity, ITradeAction, ITripStepCity } from "~/types/city";
 
 export const useMapStore = defineStore({
   id: "mapStore",
@@ -52,30 +55,37 @@ export const useMapStore = defineStore({
       } as ITripStepCity;
       this.trip.push(newStep);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     moveTripCityUp(idx: number) {
       this.trip = moveObjectInArrayUp(this.trip, idx);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     moveTripCityDown(idx: number) {
       this.trip = moveObjectInArrayDown(this.trip, idx);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     moveTripCityToTop(idx: number) {
       this.trip = moveObjectInArrayToFirstPosition(this.trip, idx);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     moveTripCityToBottom(idx: number) {
       this.trip = moveObjectInArrayToLastPosition(this.trip, idx);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     removeCityFromTrip(city: ITripStepCity) {
       const idx = this.trip.indexOf(city);
       this.trip.splice(idx, 1);
       this.calculateTradeActions();
+      this.storeTripInLocalStorage();
     },
     resetTrip() {
       this.trip = [] as ITripStepCity[];
+      this.storeTripInLocalStorage();
     },
     resetTradeAction() {
       this.trip.forEach((city) => {
@@ -127,6 +137,31 @@ export const useMapStore = defineStore({
           }
         });
       }
+    },
+    storeTripInLocalStorage() {
+      if (import.meta.client) {
+        try {
+          const serializedTrips = stringify(this.trip);
+          localStorage.setItem("trip", serializedTrips);
+        } catch (err) {
+          console.error("Failed to store trip:", err);
+        }
+      }
+    },
+    loadTripFromLocalStorage() {
+      if (import.meta.client) {
+        try {
+          const storedTrips = localStorage.getItem("trip");
+          if (storedTrips) {
+            this.trip = parse(storedTrips) as ITripStepCity[];
+          }
+        } catch (err) {
+          console.error("Failed to load trip:", err);
+        }
+      }
+    },
+    initializeStore() {
+      this.loadTripFromLocalStorage();
     },
   },
   getters: {
@@ -201,6 +236,18 @@ export const useMapStore = defineStore({
       }
       return positions;
     },
+  },
+  persist: {
+    storage: persistedState.localStorage,
+    paths: [
+      "crewVirtue",
+      "searchedCities",
+      "searchedResource",
+      "selectedAvailability",
+      "searchedTag",
+      "activeSearchTab",
+    ],
+    debug: true,
   },
 });
 
