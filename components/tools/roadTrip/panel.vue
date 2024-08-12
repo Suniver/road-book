@@ -28,6 +28,14 @@
         >
           <i class="i-tabler:window-maximize text-white text-xl"></i>
         </span>
+        <!-- About the raod trip algorithm modal button -->
+        <span
+          class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
+          v-ripple
+          @click="showAboutModal = true"
+        >
+          <i class="i-tabler:help-square text-white text-xl"></i>
+        </span>
       </div>
     </div>
     <ScrollPanel
@@ -57,6 +65,40 @@
         <div v-for="(item, index) in mapStore.trip">
           <ToolsRoadTripItem :city="item" :index="index" />
         </div>
+      </div>
+    </Dialog>
+
+    <!-- About Modal -->
+    <Dialog
+      v-model:visible="showAboutModal"
+      modal
+      position="top"
+      header="About The Road Trip Algorithm"
+      :style="{ width: '45rem' }"
+    >
+      <div class="flex flex-col gap-2 p-2">
+        <p>
+          To date, the algorithm that calculates what you should sell is deterministic and simple enough to avoid confusion:
+          <ul>
+            <li>Buy a resource in a city that produces it if a future city needs it.</li>
+            <li>If a second city further away also needs it, it will be ignored for the time being.</li>
+            <li>If several cities produce a resource that you could buy for a city further away, it will only buy from the first city (to avoid you buying more than the target city can afford).</li>
+            <li>For the moment, the algorithm doesn't take into account what your towns produce with their fields/mines/factories.</li>
+            <li>For the moment, the script does not take into account what you already have in your truck.</li>
+          </ul>
+
+          In the future we plan to
+          <ul>
+            <li>Allowing you to exclude goods that you do not wish to buy/sell.</li>
+            <li>To allow you to define a stock for your truck and take it into account for sales.</li>
+            <li>To allow you to define the production and stock of your towns and take them into account for sales.</li>
+            <li>Allow you to specify the quantity of resources you wish to buy in one town, and the quantity you wish to sell in another town, allowing the algorithm to anticipate the possibility of buying the same resource in several towns to the same destination, or selling the same resource in several towns having bought it in the same place.</li>
+          </ul>
+
+          If you have any questions or suggestions, contact me on the game's discord (my username is MooNoKe).
+
+          Enjoy the game!
+        </p>
       </div>
     </Dialog>
 
@@ -96,6 +138,7 @@ const mapStore = useMapStore();
 
 const popov = ref();
 const showTripModal = ref(false);
+const showAboutModal = ref(false);
 
 const toggle = (event: any) => {
   popov.value.toggle(event);
