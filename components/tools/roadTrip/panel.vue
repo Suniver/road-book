@@ -3,7 +3,16 @@
     <div class="bg-light-500 flex justify-between items-center p-0.5">
       <h4 class="m-0 px-1 py-1">Road Trip</h4>
       <div class="flex items-center gap-1">
-        <!-- Open Road Trip settings -->
+        <Toast position="top-center" />
+        <!-- Open Road Trip reset button -->
+        <span
+          class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
+          v-ripple
+          @click="confirmResetTrip($event)"
+        >
+          <i class="i-tabler:road-off text-white text-xl"></i>
+        </span>
+        <!-- Open Road Trip settings button -->
         <span
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
@@ -11,7 +20,7 @@
         >
           <i class="i-tabler:settings text-white text-xl"></i>
         </span>
-        <!-- Open Road Trip in separate modal -->
+        <!-- Open Road Trip in separate modal button -->
         <span
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
@@ -71,16 +80,59 @@
         ></Button>
       </div>
     </Popover>
+
+    <!-- Confirm Reset Trip Popup -->
+    <ConfirmPopup></ConfirmPopup>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
+const confirm = useConfirm();
+const toast = useToast();
 const mapStore = useMapStore();
+
 const popov = ref();
 const showTripModal = ref(false);
 
 const toggle = (event: any) => {
   popov.value.toggle(event);
+};
+
+const confirmResetTrip = (event: any) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: "Are you sure you want to reset the road trip?",
+    icon: "i-tabler:alert-triangle",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Reset",
+      severity: "danger",
+    },
+    accept: () => {
+      mapStore.resetTrip();
+      toast.add({
+        severity: "success",
+        summary: "Confirmed",
+        detail: "Road Trip Reseted",
+        life: 3000,
+      });
+    },
+    reject: () => {
+      toast.add({
+        severity: "info",
+        summary: "Cancelled",
+        detail: "Road Trip Preserved!",
+        life: 3000,
+      });
+    },
+  });
 };
 </script>
 

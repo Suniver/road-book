@@ -74,6 +74,9 @@ export const useMapStore = defineStore({
       this.trip.splice(idx, 1);
       this.calculateTradeActions();
     },
+    resetTrip() {
+      this.trip = [] as ITripStepCity[];
+    },
     resetTradeAction() {
       this.trip.forEach((city) => {
         city.tradeActions = [] as ITradeAction[];
@@ -81,17 +84,33 @@ export const useMapStore = defineStore({
     },
     calculateTradeActions() {
       this.resetTradeAction();
+
       for (let i = 0; i < this.trip.length; i++) {
         const currentCity = this.trip[i];
 
-        // Check resources that the current city produces
+        // Check resources that the currentCity produces
         currentCity.produces.forEach((producedResource) => {
           // Look ahead in the trip to find cities that need this resource
           for (let j = i + 1; j < this.trip.length; j++) {
             const nextCity = this.trip[j];
+
+            // Check if nextCity already has a trade action for the producedResource
+            const alreadyHasTradeAction = nextCity.tradeActions.some(
+              (tradeAction) => {
+                return (
+                  tradeAction.ressource.name === producedResource.name &&
+                  tradeAction.action === "sell"
+                );
+              }
+            );
+
+            // If the nextCity already has a trade action for this resource, skip adding a new one
+            if (alreadyHasTradeAction) {
+              continue;
+            }
+
             if (nextCity.needs.includes(producedResource)) {
               // Record the trade action: Buy at currentCity, sell at nextCity
-
               currentCity.tradeActions.push({
                 action: "buy",
                 ressource: producedResource,
@@ -103,7 +122,7 @@ export const useMapStore = defineStore({
                 ressource: producedResource,
                 exchangeNode: currentCity,
               });
-              break;
+              break; // Exit the loop after finding the first matching city
             }
           }
         });

@@ -335,7 +335,7 @@ export const cities: ICity[] = [
     needs: [],
     produces: [],
     has: [],
-    tags: [playerCity, repairShop],
+    tags: [playerCity, repairShop, library, bar],
     style: {},
   },
   {
@@ -1760,7 +1760,7 @@ export const cities: ICity[] = [
     needs: [],
     produces: [],
     has: [],
-    tags: [playerCity, repairShop],
+    tags: [playerCity, repairShop, library, bar],
     style: {},
   },
   {
@@ -2039,7 +2039,7 @@ export const cities: ICity[] = [
     needs: [],
     produces: [],
     has: [],
-    tags: [playerCity, repairShop],
+    tags: [playerCity, repairShop, library, bar],
     style: {},
   },
   {
@@ -3228,7 +3228,7 @@ export const cities: ICity[] = [
     needs: [],
     produces: [],
     has: [],
-    tags: [playerCity, repairShop],
+    tags: [playerCity, repairShop, library, bar],
     style: {},
   },
   {

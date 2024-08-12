@@ -11,6 +11,7 @@
           <Tab value="2">Service</Tab>
         </TabList>
         <TabPanels>
+          <!-- Search a city tab -->
           <TabPanel value="0">
             <div class="flex flex-col gap-2">
               <MultiSelect
@@ -29,6 +30,7 @@
               />
             </div>
           </TabPanel>
+          <!-- Search a ressource tab -->
           <TabPanel value="1">
             <div class="flex flex-col gap-2">
               <Select
@@ -38,6 +40,7 @@
                 placeholder="Select a Resource"
                 filter
                 showClear
+                resetFilterOnHide
                 class="w-full"
               />
               <SelectButton
@@ -53,6 +56,7 @@
               />
             </div>
           </TabPanel>
+          <!-- Search a service tab -->
           <TabPanel value="2">
             <div class="flex flex-col gap-2">
               <Select
@@ -62,6 +66,7 @@
                 placeholder="Select a Service"
                 filter
                 showClear
+                resetFilterOnHide
                 class="w-full"
               />
               <ToolsSearchResults
