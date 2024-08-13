@@ -90,11 +90,14 @@ export const useMapStore = defineStore({
       const idx = this.trip.indexOf(city);
       this.trip.splice(idx, 1);
       this.calculateTradeActions();
+      if (city.name === this.crew.currentCity?.name) {
+        this.crew.currentCity = undefined;
+      }
     },
     resetTrip() {
       this.trip = [] as ITripStepCity[];
 
-      this.crew.currentCity = defaultTripStepCity;
+      this.crew.currentCity = undefined;
     },
     setCrewCurrentCity(city: ITripStepCity) {
       this.crew.currentCity = city;
