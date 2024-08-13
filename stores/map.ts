@@ -7,7 +7,12 @@ import { resourceList } from "~/data/ressources";
 
 import type { ITag } from "~/types/tags";
 import type { IRessource } from "~/types/ressource";
-import type { ICity, ITradeAction, ITripStepCity } from "~/types/city";
+import {
+  defaultTripStepCity,
+  type ICity,
+  type ITradeAction,
+  type ITripStepCity,
+} from "~/types/city";
 
 export const useMapStore = defineStore({
   id: "mapStore",
@@ -15,10 +20,13 @@ export const useMapStore = defineStore({
     mapInstance: null,
     showLabels: false,
     crewVirtue: undefined as number | undefined,
+    crew: {
+      currentCity: undefined as ITripStepCity | undefined,
+    },
     selectedAvailability: "has",
     searchedCities: [],
     searchedResource: null as unknown as IRessource,
-    searchedTag: null,
+    searchedTag: null as ITag | null,
     activeSearchTab: "0",
     cities: cities as ICity[],
     trip: [] as ITripStepCity[],
@@ -53,39 +61,43 @@ export const useMapStore = defineStore({
         tags: city.tags,
         tradeActions: [],
       } as ITripStepCity;
+
+      // If it's the first city added to the trip, we set the currentCity
+      if (this.trip.length === 0) {
+        this.crew.currentCity = newStep;
+      }
+
       this.trip.push(newStep);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     moveTripCityUp(idx: number) {
       this.trip = moveObjectInArrayUp(this.trip, idx);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     moveTripCityDown(idx: number) {
       this.trip = moveObjectInArrayDown(this.trip, idx);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     moveTripCityToTop(idx: number) {
       this.trip = moveObjectInArrayToFirstPosition(this.trip, idx);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     moveTripCityToBottom(idx: number) {
       this.trip = moveObjectInArrayToLastPosition(this.trip, idx);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     removeCityFromTrip(city: ITripStepCity) {
       const idx = this.trip.indexOf(city);
       this.trip.splice(idx, 1);
       this.calculateTradeActions();
-      this.storeTripInLocalStorage();
     },
     resetTrip() {
       this.trip = [] as ITripStepCity[];
-      this.storeTripInLocalStorage();
+
+      this.crew.currentCity = defaultTripStepCity;
+    },
+    setCrewCurrentCity(city: ITripStepCity) {
+      this.crew.currentCity = city;
     },
     resetTradeAction() {
       this.trip.forEach((city) => {
@@ -137,31 +149,6 @@ export const useMapStore = defineStore({
           }
         });
       }
-    },
-    storeTripInLocalStorage() {
-      if (import.meta.client) {
-        try {
-          const serializedTrips = stringify(this.trip);
-          localStorage.setItem("trip", serializedTrips);
-        } catch (err) {
-          console.error("Failed to store trip:", err);
-        }
-      }
-    },
-    loadTripFromLocalStorage() {
-      if (import.meta.client) {
-        try {
-          const storedTrips = localStorage.getItem("trip");
-          if (storedTrips) {
-            this.trip = parse(storedTrips) as ITripStepCity[];
-          }
-        } catch (err) {
-          console.error("Failed to load trip:", err);
-        }
-      }
-    },
-    initializeStore() {
-      this.loadTripFromLocalStorage();
     },
   },
   getters: {
@@ -246,8 +233,13 @@ export const useMapStore = defineStore({
       "selectedAvailability",
       "searchedTag",
       "activeSearchTab",
+      "trip",
+      "crew",
     ],
-    debug: true,
+    serializer: {
+      deserialize: parse,
+      serialize: stringify,
+    },
   },
 });
 

@@ -29,9 +29,6 @@
       </LMarker>
 
       <!-- Add polyline between two markers -->
-      <!-- <LPolyline :lat-lngs="lineCoordinates" :color="'blue'" /> -->
-
-      <!-- Add polyline between two markers -->
       <LPolyline
         v-if="mapStore.tripPositions.length > 0"
         v-for="item in mapStore.tripPositions"
@@ -39,16 +36,24 @@
         :color="'blue'"
       />
 
-      <!-- Add a circle at lat-lng (position) of cities from the array -->
+      <!-- Player position circle -->
+      <LCircle
+        v-if="mapStore.crew.currentCity"
+        :lat-lng="mapStore.crew.currentCity.position"
+        :radius="30"
+        :color="'blue'"
+      />
+
+      <!-- City search circles -->
       <LCircle
         v-if="mapStore.citySearchMarkers.length > 0"
         v-for="item in mapStore.citySearchMarkers"
         :lat-lng="item.position"
         :radius="50"
-        :color="'blue'"
+        :color="'yellow'"
       />
 
-      <!-- Add a circle at lat-lng (position) of cities from the array -->
+      <!-- Resource search circles -->
       <LCircle
         v-if="mapStore.resourceSearchMarkers.length > 0"
         v-for="item in mapStore.resourceSearchMarkers"
@@ -57,13 +62,13 @@
         :color="'indigo'"
       />
 
-      <!-- Add a circle at lat-lng (position) of cities from the array -->
+      <!-- Service search circles -->
       <LCircle
         v-if="mapStore.tagSearchMarkers.length > 0"
         v-for="item in mapStore.tagSearchMarkers"
         :lat-lng="item.position"
         :radius="50"
-        :color="'MediumVioletRed'"
+        :color="'lime'"
       />
     </LMap>
 

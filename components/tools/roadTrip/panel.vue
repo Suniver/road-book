@@ -8,6 +8,7 @@
         <span
           class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
           v-ripple
+          v-tooltip.left="'Reset Road Trip'"
           @click="confirmResetTrip($event)"
         >
           <i class="i-tabler:road-off text-white text-xl"></i>
@@ -16,6 +17,7 @@
         <span
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
+          v-tooltip.left="'Road Trip Settings'"
           @click="toggle"
         >
           <i class="i-tabler:settings text-white text-xl"></i>
@@ -24,6 +26,7 @@
         <span
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
+          v-tooltip.left="'Full Screen Road Trip'"
           @click="showTripModal = true"
         >
           <i class="i-tabler:window-maximize text-white text-xl"></i>
@@ -32,6 +35,7 @@
         <span
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
+          v-tooltip.left="'More Info About Road Trip'"
           @click="showAboutModal = true"
         >
           <i class="i-tabler:help-square text-white text-xl"></i>

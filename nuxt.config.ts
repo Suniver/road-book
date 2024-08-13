@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@unocss/nuxt",
   ],
-  plugins: ["~/plugins/init-store"],
+  plugins: [],
   primevue: {
     options: {
       ripple: true,

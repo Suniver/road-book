@@ -1,5 +1,5 @@
-import type { IRessource } from "./ressource";
-import type { ITag } from "./tags";
+import { defaultRessource, type IRessource } from "./ressource";
+import { defaultTag, type ITag } from "./tags";
 
 export interface ICity {
   name: string;
@@ -28,3 +28,31 @@ export interface ITripStepCity {
   tags: ITag[];
   tradeActions: ITradeAction[];
 }
+
+export const defaultCity: ICity = {
+  name: "",
+  position: [],
+  virtue: 0,
+  needs: [defaultRessource],
+  produces: [defaultRessource],
+  has: [defaultRessource],
+  tags: [defaultTag],
+  style: {},
+};
+
+export const defaultTradeAction: ITradeAction = {
+  action: "",
+  ressource: defaultRessource,
+  exchangeNode: Object as unknown as ITripStepCity,
+};
+
+export const defaultTripStepCity: ITripStepCity = {
+  name: "",
+  position: [],
+  virtue: 0,
+  needs: [defaultRessource],
+  produces: [defaultRessource],
+  has: [defaultRessource],
+  tags: [defaultTag],
+  tradeActions: [defaultTradeAction],
+};
