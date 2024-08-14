@@ -30,6 +30,8 @@ export const useMapStore = defineStore({
     activeSearchTab: "0",
     cities: cities as ICity[],
     trip: [] as ITripStepCity[],
+    excludedResourcesPicker: [] as IRessource[][],
+    excludedResources: [] as unknown as IRessource,
   }),
   actions: {
     toggleShowLabels(value: boolean) {
@@ -107,14 +109,73 @@ export const useMapStore = defineStore({
         city.tradeActions = [] as ITradeAction[];
       });
     },
+    // deleteTradeAction(stepCity: ITripStepCity, tradeAction: ITradeAction) {
+    //   // Delte trade action for first city
+    //   const stepCityOneIdx = this.trip.findIndex(
+    //     (obj) => obj.name === stepCity.name
+    //   );
+
+    //   const stepCityOneTradeActionIdx = this.trip[
+    //     stepCityOneIdx
+    //   ].tradeActions.findIndex(
+    //     (obj) =>
+    //       obj.ressource.name === tradeAction.ressource.name &&
+    //       obj.action === tradeAction.action &&
+    //       obj.exchangeNode.name === tradeAction.exchangeNode.name
+    //   );
+
+    //   if (
+    //     stepCityOneTradeActionIdx > -1 &&
+    //     stepCityOneTradeActionIdx <
+    //       this.trip[stepCityOneIdx].tradeActions.length
+    //   ) {
+    //     this.trip[stepCityOneIdx].tradeActions.splice(
+    //       stepCityOneTradeActionIdx,
+    //       1
+    //     );
+    //   }
+
+    //   // Delte trade action for second city
+    //   const stepCityTwoIdx = this.trip.findIndex(
+    //     (obj) => obj.name === tradeAction.exchangeNode.name
+    //   );
+
+    //   const revialAction = tradeAction.action === "sell" ? "buy" : "sell";
+
+    //   const stepCityTwoTradeActionIdx = this.trip[
+    //     stepCityTwoIdx
+    //   ].tradeActions.findIndex(
+    //     (obj) =>
+    //       obj.ressource.name === tradeAction.ressource.name &&
+    //       obj.action === revialAction &&
+    //       obj.exchangeNode.name === stepCity.name
+    //   );
+
+    //   if (
+    //     stepCityTwoTradeActionIdx > -1 &&
+    //     stepCityTwoTradeActionIdx <
+    //       this.trip[stepCityTwoIdx].tradeActions.length
+    //   ) {
+    //     this.trip[stepCityTwoIdx].tradeActions.splice(
+    //       stepCityTwoTradeActionIdx,
+    //       1
+    //     );
+    //   }
+    // },
     calculateTradeActions() {
       this.resetTradeAction();
 
       for (let i = 0; i < this.trip.length; i++) {
         const currentCity = this.trip[i];
 
+        // Exclude ressrouces user don't want to trade
+        const currentCityProducedRessource = excludeResourcesFromArray(
+          currentCity.produces,
+          this.excludedResourcesPicker[1]
+        );
+
         // Check resources that the currentCity produces
-        currentCity.produces.forEach((producedResource) => {
+        currentCityProducedRessource.forEach((producedResource) => {
           // Look ahead in the trip to find cities that need this resource
           for (let j = i + 1; j < this.trip.length; j++) {
             const nextCity = this.trip[j];
@@ -134,7 +195,13 @@ export const useMapStore = defineStore({
               continue;
             }
 
-            if (nextCity.needs.includes(producedResource)) {
+            // Exclude ressrouces user don't want to trade
+            const nextCityNeededRessource = excludeResourcesFromArray(
+              nextCity.needs,
+              this.excludedResourcesPicker[1]
+            );
+
+            if (nextCityNeededRessource.includes(producedResource)) {
               // Record the trade action: Buy at currentCity, sell at nextCity
               currentCity.tradeActions.push({
                 action: "buy",
@@ -238,6 +305,7 @@ export const useMapStore = defineStore({
       "activeSearchTab",
       "trip",
       "crew",
+      "excludedResourcesPicker",
     ],
     serializer: {
       deserialize: parse,

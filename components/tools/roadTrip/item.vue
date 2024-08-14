@@ -56,7 +56,8 @@
           v-tooltip.left="'Set As Current City'"
           @click="mapStore.setCrewCurrentCity(city)"
         >
-          <i class="i-tabler:truck text-white text-xl"></i>
+          <i class="i-tabler:map-pin-filled text-white text-xl"></i>
+          <!-- <i class="i-tabler:truck text-white text-xl"></i> -->
         </span>
         <span
           class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
@@ -99,8 +100,15 @@
       <div class="flex items-center gap-2 flex-wrap">
         <div v-for="action of getBuyActions(city.tradeActions)">
           <div class="px-2 py-1 bg-green-200 border-rounded">
+            <!-- <div> -->
             <span> Buy: </span>
             {{ action.ressource.name }} (for: {{ action.exchangeNode.name }})
+            <!-- <Chip
+              :label="`Buy: ${action.ressource.name} (for: ${action.exchangeNode.name})`"
+              class="bg-green-200! border-rounded!"
+              removable
+              @remove="mapStore.deleteTradeAction(city, action)"
+            /> -->
           </div>
         </div>
       </div>

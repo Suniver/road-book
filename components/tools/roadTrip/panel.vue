@@ -18,7 +18,7 @@
           class="flex items-center bg-stone-600 border-rounded border-1 border-solid border-stone-700 p-0.5 shadow cursor-pointer"
           v-ripple
           v-tooltip.left="'Road Trip Settings'"
-          @click="toggle"
+          @click="showSettingsModal = true"
         >
           <i class="i-tabler:settings text-white text-xl"></i>
         </span>
@@ -72,6 +72,80 @@
       </div>
     </Dialog>
 
+    <!-- Raod trip settings Modal -->
+    <Dialog
+      v-model:visible="showSettingsModal"
+      modal
+      position="top"
+      header="Road Trip Settings"
+      :style="{ width: '45rem' }"
+    >
+      <div class="flex flex-col gap-2">
+        <div>
+          <!-- Crew Virtue section -->
+          <h4>
+            Crew Virtue
+            <i
+              class="i-tabler:help-circle-filled text-2xl"
+              v-tooltip.top="
+                'If you define your crew virtue here, we will give you a warning when planning to visit a city where your virtue is too low.'
+              "
+            />
+            :
+          </h4>
+          <div class="flex items-center gap-2">
+            <InputNumber
+              v-model="crewVirtue"
+              inputId="virtue"
+              mode="decimal"
+              showButtons
+              :min="0"
+              :max="25"
+            />
+            <Button
+              label="Reset"
+              severity="danger"
+              @click="crewVirtue = undefined"
+            ></Button>
+          </div>
+          <Divider />
+          <!-- Exclude ressources section -->
+          <h4>
+            Excluded Resources
+            <i
+              class="i-tabler:help-circle-filled text-2xl"
+              v-tooltip.top="
+                'Included and excluded resources: excluded resources will not be used by the auto-trade algorithm.'
+              "
+            />
+            :
+          </h4>
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-around">
+              <span class="font-semibold">Included</span>
+              <span class="font-semibold">Excluded</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <PickList
+                v-model="pickerResourceList"
+                dataKey="name"
+                breakpoint="1400px"
+                class="w-full"
+              >
+                <template #option="{ option }">
+                  {{ option.name }}
+                </template>
+              </PickList>
+            </div>
+          </div>
+          <Divider />
+          <div class="flex justify-center">
+            <Button label="Save" severity="success" @click="saveSettings" />
+          </div>
+        </div>
+      </div>
+    </Dialog>
+
     <!-- About Modal -->
     <Dialog
       v-model:visible="showAboutModal"
@@ -81,51 +155,58 @@
       :style="{ width: '45rem' }"
     >
       <div class="flex flex-col gap-2 p-2">
-        <p>
-          To date, the algorithm that calculates what you should sell is deterministic and simple enough to avoid confusion:
-          <ul>
-            <li>Buy a resource in a city that produces it if a future city needs it.</li>
-            <li>If a second city further away also needs it, it will be ignored for the time being.</li>
-            <li>If several cities produce a resource that you could buy for a city further away, it will only buy from the first city (to avoid you buying more than the target city can afford).</li>
-            <li>For the moment, the algorithm doesn't take into account what your towns produce with their fields/mines/factories.</li>
-            <li>For the moment, the script does not take into account what you already have in your truck.</li>
-          </ul>
+        To date, the algorithm that calculates what you should sell is
+        deterministic and simple enough to avoid confusion:
+        <ul>
+          <li>
+            Buy a resource in a city that produces it if a future city needs it.
+          </li>
+          <li>
+            If a second city further away also needs it, it will be ignored for
+            the time being.
+          </li>
+          <li>
+            If several cities produce a resource that you could buy for a city
+            further away, it will only buy from the first city (to avoid you
+            buying more than the target city can afford).
+          </li>
+          <li>
+            For the moment, the algorithm doesn't take into account what your
+            towns produce with their fields/mines/factories.
+          </li>
+          <li>
+            For the moment, the script does not take into account what you
+            already have in your truck.
+          </li>
+        </ul>
 
-          In the future we plan to
-          <ul>
-            <li>Allowing you to exclude goods that you do not wish to buy/sell.</li>
-            <li>To allow you to define a stock for your truck and take it into account for sales.</li>
-            <li>To allow you to define the production and stock of your towns and take them into account for sales.</li>
-            <li>Allow you to specify the quantity of resources you wish to buy in one town, and the quantity you wish to sell in another town, allowing the algorithm to anticipate the possibility of buying the same resource in several towns to the same destination, or selling the same resource in several towns having bought it in the same place.</li>
-          </ul>
+        In the future we plan to
+        <ul>
+          <li>
+            Allowing you to exclude goods that you do not wish to buy/sell.
+          </li>
+          <li>
+            To allow you to define a stock for your truck and take it into
+            account for sales.
+          </li>
+          <li>
+            To allow you to define the production and stock of your towns and
+            take them into account for sales.
+          </li>
+          <li>
+            Allow you to specify the quantity of resources you wish to buy in
+            one town, and the quantity you wish to sell in another town,
+            allowing the algorithm to anticipate the possibility of buying the
+            same resource in several towns to the same destination, or selling
+            the same resource in several towns having bought it in the same
+            place.
+          </li>
+        </ul>
 
-          If you have any questions or suggestions, contact me on the game's discord (my username is MooNoKe).
-
-          Enjoy the game!
-        </p>
+        If you have any questions or suggestions, contact me on the game's
+        discord (my username is MooNoKe). Enjoy the game!
       </div>
     </Dialog>
-
-    <!-- Road Trip Settings Popover -->
-    <Popover ref="popov">
-      <div class="flex flex-col gap-2" style="max-width: 150px">
-        <label for="virtue" class="font-bold block"> Crew Virtue </label>
-        <InputNumber
-          v-model="mapStore.crewVirtue"
-          inputId="virtue"
-          mode="decimal"
-          showButtons
-          :min="0"
-          :max="25"
-          fluid
-        />
-        <Button
-          label="Reset"
-          severity="danger"
-          @click="mapStore.crewVirtue = undefined"
-        ></Button>
-      </div>
-    </Popover>
 
     <!-- Confirm Reset Trip Popup -->
     <ConfirmPopup></ConfirmPopup>
@@ -135,18 +216,28 @@
 <script lang="ts" setup>
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import { resourceList } from "~/data/ressources";
+import type { IRessource } from "~/types/ressource";
 
 const confirm = useConfirm();
 const toast = useToast();
 const mapStore = useMapStore();
 
-const popov = ref();
 const showTripModal = ref(false);
+const showSettingsModal = ref(false);
 const showAboutModal = ref(false);
 
-const toggle = (event: any) => {
-  popov.value.toggle(event);
-};
+const crewVirtue = ref(mapStore.crewVirtue);
+// const pickerResourceList = ref([resourceList, mapStore.excludedResources]);
+const pickerResourceList = ref();
+if (mapStore.excludedResourcesPicker[0]) {
+  pickerResourceList.value = [
+    mapStore.excludedResourcesPicker[0],
+    mapStore.excludedResourcesPicker[1],
+  ];
+} else {
+  pickerResourceList.value = [resourceList, []];
+}
 
 const confirmResetTrip = (event: any) => {
   confirm.require({
@@ -181,6 +272,12 @@ const confirmResetTrip = (event: any) => {
     },
   });
 };
+
+function saveSettings() {
+  mapStore.crewVirtue = crewVirtue.value;
+  mapStore.excludedResourcesPicker = pickerResourceList.value;
+  mapStore.calculateTradeActions();
+}
 </script>
 
 <style lang="scss"></style>
