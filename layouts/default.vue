@@ -6,11 +6,11 @@
     >
       <Header />
     </div>
-    <div style="height: 90vh">
+    <div style="height: 88vh">
       <slot />
     </div>
     <div
-      style="height: 5vh"
+      style="height: 7vh"
       class="p-2 bg-stone-200 border-0 border-t-1 border-dark-200 border-solid z-500"
     >
       <Footer />

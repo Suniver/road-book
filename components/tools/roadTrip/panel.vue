@@ -84,7 +84,7 @@
       </div>
     </div>
     <ScrollPanel
-      style="width: 100%; height: 85vh"
+      style="width: 100%; height: 84vh"
       :dt="{
         bar: {
           background: '{stone-400}',

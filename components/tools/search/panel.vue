@@ -26,7 +26,7 @@
               />
               <ToolsSearchResults
                 :cities="mapStore.citySearchMarkers"
-                height="74vh"
+                height="72vh"
               />
             </div>
           </TabPanel>
@@ -52,7 +52,7 @@
               />
               <ToolsSearchResults
                 :cities="mapStore.resourceSearchMarkers"
-                height="70vh"
+                height="68vh"
               />
             </div>
           </TabPanel>
@@ -71,7 +71,7 @@
               />
               <ToolsSearchResults
                 :cities="mapStore.tagSearchMarkers"
-                height="74vh"
+                height="72vh"
               />
             </div>
           </TabPanel>
