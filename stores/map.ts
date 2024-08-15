@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { stringify, parse } from "flatted";
 import { defineStore, acceptHMRUpdate } from "pinia";
 
@@ -53,7 +54,10 @@ export const useMapStore = defineStore({
       }
     },
     addCityToTrip(city: ICity) {
+      const cityId = uuidv4();
+
       const newStep = {
+        id: cityId,
         name: city.name,
         position: city.position,
         virtue: city.virtue,
@@ -109,59 +113,47 @@ export const useMapStore = defineStore({
         city.tradeActions = [] as ITradeAction[];
       });
     },
-    // deleteTradeAction(stepCity: ITripStepCity, tradeAction: ITradeAction) {
-    //   // Delte trade action for first city
-    //   const stepCityOneIdx = this.trip.findIndex(
-    //     (obj) => obj.name === stepCity.name
-    //   );
+    deleteTradeAction(stepCity: ITripStepCity, tradeAction: ITradeAction) {
+      // Delte trade action for first city
+      const stepCityOneIdx = this.trip.findIndex(
+        (obj) => obj.id === stepCity.id
+      );
 
-    //   const stepCityOneTradeActionIdx = this.trip[
-    //     stepCityOneIdx
-    //   ].tradeActions.findIndex(
-    //     (obj) =>
-    //       obj.ressource.name === tradeAction.ressource.name &&
-    //       obj.action === tradeAction.action &&
-    //       obj.exchangeNode.name === tradeAction.exchangeNode.name
-    //   );
+      const stepCityOneTradeActionIdx = this.trip[
+        stepCityOneIdx
+      ].tradeActions.findIndex((obj) => obj.id === tradeAction.id);
 
-    //   if (
-    //     stepCityOneTradeActionIdx > -1 &&
-    //     stepCityOneTradeActionIdx <
-    //       this.trip[stepCityOneIdx].tradeActions.length
-    //   ) {
-    //     this.trip[stepCityOneIdx].tradeActions.splice(
-    //       stepCityOneTradeActionIdx,
-    //       1
-    //     );
-    //   }
+      if (
+        stepCityOneTradeActionIdx > -1 &&
+        stepCityOneTradeActionIdx <
+          this.trip[stepCityOneIdx].tradeActions.length
+      ) {
+        this.trip[stepCityOneIdx].tradeActions.splice(
+          stepCityOneTradeActionIdx,
+          1
+        );
+      }
 
-    //   // Delte trade action for second city
-    //   const stepCityTwoIdx = this.trip.findIndex(
-    //     (obj) => obj.name === tradeAction.exchangeNode.name
-    //   );
+      // Delte trade action for second city
+      const stepCityTwoIdx = this.trip.findIndex(
+        (obj) => obj.id === tradeAction.exchangeNode.id
+      );
 
-    //   const revialAction = tradeAction.action === "sell" ? "buy" : "sell";
+      const stepCityTwoTradeActionIdx = this.trip[
+        stepCityTwoIdx
+      ].tradeActions.findIndex((obj) => obj.id === tradeAction.id);
 
-    //   const stepCityTwoTradeActionIdx = this.trip[
-    //     stepCityTwoIdx
-    //   ].tradeActions.findIndex(
-    //     (obj) =>
-    //       obj.ressource.name === tradeAction.ressource.name &&
-    //       obj.action === revialAction &&
-    //       obj.exchangeNode.name === stepCity.name
-    //   );
-
-    //   if (
-    //     stepCityTwoTradeActionIdx > -1 &&
-    //     stepCityTwoTradeActionIdx <
-    //       this.trip[stepCityTwoIdx].tradeActions.length
-    //   ) {
-    //     this.trip[stepCityTwoIdx].tradeActions.splice(
-    //       stepCityTwoTradeActionIdx,
-    //       1
-    //     );
-    //   }
-    // },
+      if (
+        stepCityTwoTradeActionIdx > -1 &&
+        stepCityTwoTradeActionIdx <
+          this.trip[stepCityTwoIdx].tradeActions.length
+      ) {
+        this.trip[stepCityTwoIdx].tradeActions.splice(
+          stepCityTwoTradeActionIdx,
+          1
+        );
+      }
+    },
     calculateTradeActions() {
       this.resetTradeAction();
 
@@ -203,13 +195,17 @@ export const useMapStore = defineStore({
 
             if (nextCityNeededRessource.includes(producedResource)) {
               // Record the trade action: Buy at currentCity, sell at nextCity
+              const tradeId = uuidv4();
+
               currentCity.tradeActions.push({
+                id: tradeId,
                 action: "buy",
                 ressource: producedResource,
                 exchangeNode: nextCity,
               });
 
               nextCity.tradeActions.push({
+                id: tradeId,
                 action: "sell",
                 ressource: producedResource,
                 exchangeNode: currentCity,

@@ -13,12 +13,14 @@ export interface ICity {
 }
 
 export interface ITradeAction {
+  id: string;
   action: string; // 'buy' or 'sell'
   ressource: IRessource;
   exchangeNode: ITripStepCity; // It is the origin city if action is 'sell' or the target city if action is 'buy'
 }
 
 export interface ITripStepCity {
+  id: string;
   name: string;
   position: number[];
   virtue: number;

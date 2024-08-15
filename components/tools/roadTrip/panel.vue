@@ -51,10 +51,11 @@
       }"
     >
       <div class="flex flex-col gap-2 p-2">
-        <div v-for="(item, index) in mapStore.trip">
+        <div v-for="(item, index) in mapStore.trip" :key="item.id">
           <ToolsRoadTripItem :city="item" :index="index" />
-        </div></div
-    ></ScrollPanel>
+        </div>
+      </div>
+    </ScrollPanel>
 
     <!-- Road Trip Modal -->
     <Dialog
@@ -214,8 +215,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 import { resourceList } from "~/data/ressources";
 
 const confirm = useConfirm();

@@ -97,26 +97,41 @@
         >Be careful, your crew virtue ({{ mapStore.crewVirtue }}) is too low for
         {{ city.name }} ({{ city.virtue }}).</Message
       >
-      <div class="flex items-center gap-2 flex-wrap">
-        <div v-for="action of getBuyActions(city.tradeActions)">
-          <div class="px-2 py-1 bg-green-200 border-rounded">
-            <!-- <div> -->
+      <div class="flex gap-2 flex-wrap">
+        <div
+          v-for="action of getBuyActions(city.tradeActions)"
+          :key="action.id"
+        >
+          <div
+            class="flex items-center gap-1 px-2 py-1 bg-green-200 border-rounded"
+          >
             <span> Buy: </span>
             {{ action.ressource.name }} (for: {{ action.exchangeNode.name }})
-            <!-- <Chip
-              :label="`Buy: ${action.ressource.name} (for: ${action.exchangeNode.name})`"
-              class="bg-green-200! border-rounded!"
-              removable
-              @remove="mapStore.deleteTradeAction(city, action)"
-            /> -->
+            <span
+              class="inline-flex items-center cursor-pointer rounded-1/2 bg-red-400 p-0.5"
+              v-tooltip.left="'Delete this trade from Road Trip.'"
+              @click="mapStore.deleteTradeAction(city, action)"
+              ><i class="i-tabler:trash text-white text-lg"></i
+            ></span>
           </div>
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
-        <div v-for="action of getSellActions(city.tradeActions)">
-          <div class="px-2 py-1 bg-amber-200 border-rounded">
+        <div
+          v-for="action of getSellActions(city.tradeActions)"
+          :key="action.id"
+        >
+          <div
+            class="flex items-center gap-1 px-2 py-1 bg-amber-200 border-rounded"
+          >
             <span> Sell: </span>
             {{ action.ressource.name }} (from: {{ action.exchangeNode.name }})
+            <span
+              class="inline-flex items-center cursor-pointer rounded-1/2 bg-red-400 p-0.5"
+              v-tooltip.left="'Delete this trade from Road Trip.'"
+              @click="mapStore.deleteTradeAction(city, action)"
+              ><i class="i-tabler:trash text-white text-lg"></i
+            ></span>
           </div>
         </div>
       </div>
