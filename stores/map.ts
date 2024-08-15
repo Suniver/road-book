@@ -20,6 +20,7 @@ export const useMapStore = defineStore({
   state: () => ({
     mapInstance: null,
     showLabels: false,
+    selectedToolboxLayout: "Both",
     crewVirtue: undefined as number | undefined,
     crew: {
       currentCity: undefined as ITripStepCity | undefined,
