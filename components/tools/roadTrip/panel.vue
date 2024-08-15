@@ -275,6 +275,13 @@ function saveSettings() {
   mapStore.crewVirtue = crewVirtue.value;
   mapStore.excludedResourcesPicker = pickerResourceList.value;
   mapStore.calculateTradeActions();
+  showSettingsModal.value = false;
+  toast.add({
+    severity: "success",
+    summary: "Saved",
+    detail: "Road Trip settings successfully saved.",
+    life: 3000,
+  });
 }
 </script>
 
