@@ -31,6 +31,12 @@ export interface ITripStepCity {
   tradeActions: ITradeAction[];
 }
 
+export interface ITripSave {
+  id: string;
+  name: string;
+  trip: ITripStepCity[];
+}
+
 export const defaultCity: ICity = {
   name: "",
   position: [],

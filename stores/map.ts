@@ -9,9 +9,9 @@ import { resourceList } from "~/data/ressources";
 import type { ITag } from "~/types/tags";
 import type { IRessource } from "~/types/ressource";
 import {
-  defaultTripStepCity,
   type ICity,
   type ITradeAction,
+  type ITripSave,
   type ITripStepCity,
 } from "~/types/city";
 
@@ -31,6 +31,7 @@ export const useMapStore = defineStore({
     activeSearchTab: "0",
     cities: cities as ICity[],
     trip: [] as ITripStepCity[],
+    savedTrips: [] as ITripSave[],
     excludedResourcesPicker: [] as IRessource[][],
     excludedResources: [] as unknown as IRessource,
   }),
@@ -104,6 +105,31 @@ export const useMapStore = defineStore({
       this.trip = [] as ITripStepCity[];
 
       this.crew.currentCity = undefined;
+    },
+    saveTrip(saveName: string) {
+      const saveId = uuidv4();
+
+      const tripSave = {
+        id: saveId,
+        name: saveName,
+        trip: this.trip,
+      };
+
+      this.savedTrips.push(tripSave);
+    },
+    loadTripSave(tripId: string) {
+      const record = this.savedTrips.find((obj) => obj.id === tripId);
+      if (record) {
+        this.trip = record.trip as unknown as ITripStepCity[];
+        this.crew.currentCity = record.trip[0];
+      }
+    },
+    deleteTripSave(tripId: string) {
+      const saveIdx = this.savedTrips.findIndex((obj) => obj.id === tripId);
+
+      if (saveIdx > -1 && saveIdx < this.savedTrips.length) {
+        this.savedTrips.splice(saveIdx, 1);
+      }
     },
     setCrewCurrentCity(city: ITripStepCity) {
       this.crew.currentCity = city;
@@ -300,6 +326,7 @@ export const useMapStore = defineStore({
       "searchedTag",
       "activeSearchTab",
       "trip",
+      "savedTrips",
       "crew",
       "excludedResourcesPicker",
     ],

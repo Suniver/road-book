@@ -4,6 +4,47 @@
       <h4 class="m-0 px-1 py-1">Road Trip</h4>
       <div class="flex items-center gap-1">
         <Toast position="top-center" />
+        <!-- Save Road Trip button -->
+        <span
+          class="flex items-center bg-green-500 border-rounded border-1 border-solid border-green-500 p-0.5 shadow cursor-pointer"
+          v-ripple
+          v-tooltip.left="'Save Road Trip'"
+          @click="toggleSaveTripPopover"
+        >
+          <i class="i-tabler:device-floppy text-white text-xl"></i>
+        </span>
+        <Popover ref="saveTripPopoverRef">
+          <div class="flex flex-col gap-2">
+            <h4 class="m-0">Save this Road Trip ?</h4>
+            <div class="flex flex-col gap-1">
+              <label :for="saveTripNameFieldId">Name:</label>
+              <InputText :id="saveTripNameFieldId" v-model="saveName" />
+            </div>
+            <div class="flex gap-2 items-center justify-between">
+              <Button
+                label="Cancel"
+                size="small"
+                @click="toggleSaveTripPopover"
+              />
+              <Button
+                label="Save"
+                size="small"
+                severity="success"
+                :disabled="saveName ? false : true"
+                @click="saveTrip"
+              />
+            </div>
+          </div>
+        </Popover>
+        <!-- Load Road Trip button -->
+        <span
+          class="flex items-center bg-sky-500 border-rounded border-1 border-solid border-sky-600 p-0.5 shadow cursor-pointer"
+          v-ripple
+          v-tooltip.left="'Load Road Trip'"
+          @click="showSavedTripsModal = true"
+        >
+          <i class="i-tabler:book-upload text-white text-xl"></i>
+        </span>
         <!-- Open Road Trip reset button -->
         <span
           class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
@@ -147,6 +188,54 @@
       </div>
     </Dialog>
 
+    <!-- Saved Trips Modal -->
+    <Dialog
+      v-model:visible="showSavedTripsModal"
+      modal
+      position="top"
+      header="Saved Road Trips"
+      :style="{ width: '45rem' }"
+    >
+      <div class="flex flex-col gap-2">
+        <div v-for="save in mapStore.savedTrips" :key="save.id">
+          <div class="border-stone-300 border-solid border-1 border-rounded">
+            <div
+              class="flex items-center justify-between bg-stone-200 border-rounded p-x-2 p-y-1"
+            >
+              <span class="font-semibold">
+                {{ save.name }}
+              </span>
+              <div class="flex items-center gap-2">
+                <!-- Load Saved Trip Button -->
+                <span
+                  class="inline-flex items-center border-rounded p-1 bg-green-500 cursor-pointer"
+                  v-tooltip.right="'Load Saved Road Trip'"
+                  @click="loadSavedTrip(save.id)"
+                >
+                  <i class="i-tabler:file-download text-white text-lg"></i>
+                </span>
+                <!-- Delete Saved Trip Button -->
+                <span
+                  class="inline-flex items-center border-rounded p-1 bg-red-400 cursor-pointer"
+                  v-tooltip.right="'Delete Saved Road Trip'"
+                  @click="deleteSavedTrip(save.id)"
+                >
+                  <i class="i-tabler:trash text-white text-lg"></i>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center p-x-2 p-y-1">
+              <span
+                v-for="city of save.trip"
+                class="bg-sky-100 border-rounded p-x-2 p-y-1"
+                >{{ city.name }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </Dialog>
+
     <!-- About Modal -->
     <Dialog
       v-model:visible="showAboutModal"
@@ -184,9 +273,6 @@
         In the future we plan to
         <ul>
           <li>
-            Allowing you to exclude goods that you do not wish to buy/sell.
-          </li>
-          <li>
             To allow you to define a stock for your truck and take it into
             account for sales.
           </li>
@@ -223,8 +309,13 @@ const confirm = useConfirm();
 const toast = useToast();
 const mapStore = useMapStore();
 
+const saveTripPopoverRef = ref();
+const saveName = ref("");
+const saveTripNameFieldId = useId();
+
 const showTripModal = ref(false);
 const showSettingsModal = ref(false);
+const showSavedTripsModal = ref(false);
 const showAboutModal = ref(false);
 
 const crewVirtue = ref(mapStore.crewVirtue);
@@ -237,6 +328,10 @@ if (mapStore.excludedResourcesPicker[0]) {
 } else {
   pickerResourceList.value = [resourceList, []];
 }
+
+const toggleSaveTripPopover = (event: any) => {
+  saveTripPopoverRef.value.toggle(event);
+};
 
 const confirmResetTrip = (event: any) => {
   confirm.require({
@@ -281,6 +376,38 @@ function saveSettings() {
     severity: "success",
     summary: "Saved",
     detail: "Road Trip settings successfully saved.",
+    life: 3000,
+  });
+}
+
+function saveTrip(event: any) {
+  mapStore.saveTrip(saveName.value);
+  toggleSaveTripPopover(event);
+  toast.add({
+    severity: "success",
+    summary: "Saved",
+    detail: "Trip successfully saved.",
+    life: 3000,
+  });
+}
+
+function deleteSavedTrip(tripId: string) {
+  mapStore.deleteTripSave(tripId);
+  toast.add({
+    severity: "success",
+    summary: "Deleted",
+    detail: "Trip successfully deleted.",
+    life: 3000,
+  });
+}
+
+function loadSavedTrip(tripId: string) {
+  mapStore.loadTripSave(tripId);
+  showSavedTripsModal.value = false;
+  toast.add({
+    severity: "info",
+    summary: "Loaded",
+    detail: "Trip successfully loaded.",
     life: 3000,
   });
 }
