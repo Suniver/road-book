@@ -14,10 +14,6 @@
         </SplitterPanel>
       </Splitter>
     </ClientOnly>
-
-    <!-- <ClientOnly>
-      <Map />
-    </ClientOnly> -->
   </div>
 </template>
 
