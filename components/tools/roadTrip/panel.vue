@@ -217,7 +217,6 @@
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { resourceList } from "~/data/ressources";
-import type { IRessource } from "~/types/ressource";
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -228,7 +227,6 @@ const showSettingsModal = ref(false);
 const showAboutModal = ref(false);
 
 const crewVirtue = ref(mapStore.crewVirtue);
-// const pickerResourceList = ref([resourceList, mapStore.excludedResources]);
 const pickerResourceList = ref();
 if (mapStore.excludedResourcesPicker[0]) {
   pickerResourceList.value = [
