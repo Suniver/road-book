@@ -17,14 +17,15 @@
     >
       <LImageOverlay :url="imageUrl" :bounds="imageBounds" />
       <LMarker
-        v-for="marker in markers"
+        v-for="(marker, index) in markers"
         :key="marker.name"
         :lat-lng="marker.position"
-        @popupopen="onPopupOpen"
+        @popupopen="onPopupOpen($event, index)"
         @popupclose="onPopupClose"
+        ref="markerRefs"
       >
-        <LPopup :options="{ minWidth: 300 }">
-          <CityInfo :city="marker" />
+        <LPopup ref="popupRefs" :options="{ minWidth: 300 }">
+          <CityInfo :city="marker" :close-popup="() => closePopup(index)" />
         </LPopup>
       </LMarker>
 
@@ -93,7 +94,6 @@
 <script setup>
 import { CRS } from "leaflet/dist/leaflet-src.esm";
 import { ref, watch } from "vue";
-import { cities } from "~/data/cities";
 
 const mapStore = useMapStore();
 
@@ -110,6 +110,8 @@ const imageBounds = ref([
 ]);
 
 const markers = mapStore.cities;
+const markerRefs = ref([]);
+const popupRefs = ref([]);
 
 const popupIsOpen = ref(false);
 const showLabels = computed(() => {
@@ -120,13 +122,21 @@ const showLabels = computed(() => {
   }
 });
 // Handle popup open event
-const onPopupOpen = (e) => {
+const onPopupOpen = (event, index) => {
   popupIsOpen.value = true;
+  popupRefs.value[index] = event.target;
 };
 
 // Handle popup close event
 const onPopupClose = (e) => {
   popupIsOpen.value = false;
+};
+
+const closePopup = (index) => {
+  const popup = popupRefs.value[index];
+  if (popup) {
+    popup.closePopup();
+  }
 };
 
 // Only for dev mode to display and copy coordinates on click

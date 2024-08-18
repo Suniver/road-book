@@ -37,7 +37,7 @@
         size="small"
         severity="success"
         aria-label="Add to Road Trip"
-        @click="mapStore.addCityToTrip(city as ICity)"
+        @click="addCityToTrip(city as ICity)"
       >
         <span class="i-tabler:road text-xl"></span>
         <span>Add to Trip</span>
@@ -46,7 +46,7 @@
         size="small"
         severity="info"
         aria-label="Go to City"
-        @click="mapStore.centerViewOnPosition(city.position)"
+        @click="centerViewOnPosition(city.position)"
       >
         <span class="i-tabler:focus-2 text-xl"></span>
         <span>Focus View On</span>
@@ -60,9 +60,26 @@ import type { ICity, ITripStepCity } from "~/types/city";
 
 const props = defineProps<{
   city: ICity | ITripStepCity;
+  closePopup: Function;
 }>();
 
 const mapStore = useMapStore();
+
+const closePopup = () => {
+  if (props.closePopup) {
+    props.closePopup();
+  }
+};
+
+const addCityToTrip = (city: ICity) => {
+  mapStore.addCityToTrip(city);
+  closePopup();
+};
+
+const centerViewOnPosition = (position: number[]) => {
+  mapStore.centerViewOnPosition(position);
+  closePopup();
+};
 </script>
 
 <style lang="scss"></style>
