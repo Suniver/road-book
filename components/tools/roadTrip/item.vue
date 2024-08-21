@@ -3,6 +3,7 @@
   <div :class="cityFrameClass">
     <!-- <div class="flex flex-col gap-1 p-x-2 p-y-1 bg-blue-100 border-rounded"> -->
     <div class="flex flex-col gap-1 p-x-2 p-y-1" :class="cityClass">
+      <!-- First Line -->
       <div class="flex gap-2 items-center justify-between">
         <div class="flex items-center gap-1 truncate font-semibold">
           <span class="">#{{ index + 1 }}</span>
@@ -47,46 +48,56 @@
           </span>
         </div>
       </div>
-      <!-- Second line button section -->
-      <div class="flex gap-1 justify-end">
-        <span
-          class="flex items-center bg-sky-500 border-rounded border-1 border-solid border-sky-600 p-0.5 shadow cursor-pointer"
-          v-ripple
-          aria-label="Set As Current City"
-          v-tooltip.left="'Set As Current City'"
-          @click="mapStore.setCrewCurrentCity(city)"
-        >
-          <i class="i-tabler:map-pin-filled text-white text-xl"></i>
-          <!-- <i class="i-tabler:truck text-white text-xl"></i> -->
-        </span>
-        <span
-          class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
-          v-ripple
-          aria-label="Remove from Road Trip"
-          v-tooltip.left="'Remove from  Trip'"
-          @click="mapStore.removeCityFromTrip(city)"
-        >
-          <i class="i-tabler:road-off text-white text-xl"></i>
-        </span>
-        <span
-          class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
-          v-ripple
-          aria-label="Focus View On City"
-          v-tooltip.left="'Focus View On City'"
-          @click="mapStore.centerViewOnPosition(city.position)"
-        >
-          <i class="i-tabler:focus-2 text-white text-xl"></i>
-        </span>
-        <span
-          class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
-          v-ripple
-          aria-label="Get Info About City"
-          v-tooltip.left="'More Info About City'"
-          @click="toggle"
-        >
-          <i class="i-tabler:info-circle text-white text-xl"></i>
-        </span>
-        <Popover ref="popov"> <CityInfo :city="city" /> </Popover>
+      <!-- Second Line -->
+      <div class="flex gap-2 justify-between">
+        <div class="truncate flex gap-1">
+          <span
+            v-for="service in city.tags"
+            class="bg-white px-1.5 py-0.5 border-rounded italic"
+            >{{ service.name }}</span
+          >
+        </div>
+        <!-- Second line button section -->
+        <div class="flex gap-1 items-center">
+          <span
+            class="flex items-center bg-sky-500 border-rounded border-1 border-solid border-sky-600 p-0.5 shadow cursor-pointer"
+            v-ripple
+            aria-label="Set As Current City"
+            v-tooltip.left="'Set As Current City'"
+            @click="mapStore.setCrewCurrentCity(city)"
+          >
+            <i class="i-tabler:map-pin-filled text-white text-xl"></i>
+            <!-- <i class="i-tabler:truck text-white text-xl"></i> -->
+          </span>
+          <span
+            class="flex items-center bg-red-400 border-rounded border-1 border-solid border-red-500 p-0.5 shadow cursor-pointer"
+            v-ripple
+            aria-label="Remove from Road Trip"
+            v-tooltip.left="'Remove from  Trip'"
+            @click="mapStore.removeCityFromTrip(city)"
+          >
+            <i class="i-tabler:road-off text-white text-xl"></i>
+          </span>
+          <span
+            class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
+            v-ripple
+            aria-label="Focus View On City"
+            v-tooltip.left="'Focus View On City'"
+            @click="mapStore.centerViewOnPosition(city.position)"
+          >
+            <i class="i-tabler:focus-2 text-white text-xl"></i>
+          </span>
+          <span
+            class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
+            v-ripple
+            aria-label="Get Info About City"
+            v-tooltip.left="'More Info About City'"
+            @click="toggle"
+          >
+            <i class="i-tabler:info-circle text-white text-xl"></i>
+          </span>
+          <Popover ref="popov"> <CityInfo :city="city" /> </Popover>
+        </div>
       </div>
     </div>
     <!-- trade book section-->
