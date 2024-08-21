@@ -18,7 +18,7 @@
             class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
             v-ripple
             v-tooltip.left="'Move City One Up'"
-            @click="mapStore.moveTripCityUp(index)"
+            @click="mapStore.moveTripCityUp(index, city)"
           >
             <i class="i-tabler:chevron-up text-white text-xl"></i>
           </span>
@@ -26,7 +26,7 @@
             class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
             v-ripple
             v-tooltip.left="'Move City One Down'"
-            @click="mapStore.moveTripCityDown(index)"
+            @click="mapStore.moveTripCityDown(index, city)"
           >
             <i class="i-tabler:chevron-down text-white text-xl"></i>
           </span>
@@ -34,7 +34,7 @@
             class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
             v-ripple
             v-tooltip.left="'Move City To Top'"
-            @click="mapStore.moveTripCityToTop(index)"
+            @click="mapStore.moveTripCityToTop(index, city)"
           >
             <i class="i-tabler:chevrons-up text-white text-xl"></i>
           </span>
@@ -42,7 +42,7 @@
             class="flex items-center bg-stone-500 border-rounded border-1 border-solid border-stone-600 p-0.5 shadow cursor-pointer"
             v-ripple
             v-tooltip.left="'Move City To Bottom'"
-            @click="mapStore.moveTripCityToBottom(index)"
+            @click="mapStore.moveTripCityToBottom(index, city)"
           >
             <i class="i-tabler:chevrons-down text-white text-xl"></i>
           </span>
@@ -116,7 +116,7 @@
           <div
             class="flex items-center gap-1 px-2 py-1 bg-green-200 border-rounded"
           >
-            <span> Buy: </span>
+            <span class="px-1 py-0.5 border-rounded bg-green-100"> Buy: </span>
             {{ action.ressource.name }} (for: {{ action.exchangeNode.name }})
             <span
               class="inline-flex items-center cursor-pointer rounded-1/2 bg-red-400 p-0.5"
@@ -135,7 +135,7 @@
           <div
             class="flex items-center gap-1 px-2 py-1 bg-amber-200 border-rounded"
           >
-            <span> Sell: </span>
+            <span class="px-1 py-0.5 border-rounded bg-amber-100"> Sell: </span>
             {{ action.ressource.name }} (from: {{ action.exchangeNode.name }})
             <span
               class="inline-flex items-center cursor-pointer rounded-1/2 bg-red-400 p-0.5"

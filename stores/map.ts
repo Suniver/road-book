@@ -11,6 +11,7 @@ import { resourceList } from "~/data/ressources";
 
 import {
   type ICity,
+  type IExcludedTrade,
   type ITradeAction,
   type ITripStepCity,
 } from "~/types/city";
@@ -39,6 +40,7 @@ export const useMapStore = defineStore({
     trip: [],
     savedTrips: [],
     excludedResourcesPicker: [],
+    excludedTrades: [],
   }),
   actions: {
     toggleShowLabels(value: boolean) {
@@ -82,23 +84,53 @@ export const useMapStore = defineStore({
       this.trip.push(newStep);
       this.calculateTradeActions();
     },
-    moveTripCityUp(idx: number) {
+    moveTripCityUp(idx: number, step: ITripStepCity) {
+      // Remove deprecated excludedTrades
+      const excludedTradesToRemove =
+        this.findExcludedTradesByTripStepCity(step);
+      this.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+      // Move step city in trip array
       this.trip = moveObjectInArrayUp(this.trip, idx);
       this.calculateTradeActions();
     },
-    moveTripCityDown(idx: number) {
+    moveTripCityDown(idx: number, step: ITripStepCity) {
+      // Remove deprecated excludedTrades
+      const excludedTradesToRemove =
+        this.findExcludedTradesByTripStepCity(step);
+      this.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+      // Move step city in trip array
       this.trip = moveObjectInArrayDown(this.trip, idx);
       this.calculateTradeActions();
     },
-    moveTripCityToTop(idx: number) {
+    moveTripCityToTop(idx: number, step: ITripStepCity) {
+      // Remove deprecated excludedTrades
+      const excludedTradesToRemove =
+        this.findExcludedTradesByTripStepCity(step);
+      this.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+      // Move step city in trip array
       this.trip = moveObjectInArrayToFirstPosition(this.trip, idx);
       this.calculateTradeActions();
     },
-    moveTripCityToBottom(idx: number) {
+    moveTripCityToBottom(idx: number, step: ITripStepCity) {
+      // Remove deprecated excludedTrades
+      const excludedTradesToRemove =
+        this.findExcludedTradesByTripStepCity(step);
+      this.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+      // Move step city in trip array
       this.trip = moveObjectInArrayToLastPosition(this.trip, idx);
       this.calculateTradeActions();
     },
     removeCityFromTrip(city: ITripStepCity) {
+      // Remove deprecated excludedTrades
+      const excludedTradesToRemove =
+        this.findExcludedTradesByTripStepCity(city);
+      this.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+      // Remove city from trip and recalculate tradeActions
       const idx = this.trip.indexOf(city);
       this.trip.splice(idx, 1);
       this.calculateTradeActions();
@@ -108,7 +140,7 @@ export const useMapStore = defineStore({
     },
     resetTrip() {
       this.trip = [] as ITripStepCity[];
-
+      this.resetExcludedTrades();
       this.crew.currentCity = undefined;
     },
     saveTrip(saveName: string) {
@@ -118,6 +150,7 @@ export const useMapStore = defineStore({
         id: saveId,
         name: saveName,
         trip: _.cloneDeep(this.trip),
+        excludedTrades: _.cloneDeep(this.excludedTrades),
       };
 
       this.savedTrips.push(tripSave);
@@ -127,6 +160,7 @@ export const useMapStore = defineStore({
       if (record) {
         this.trip = _.cloneDeep(record.trip) as unknown as ITripStepCity[];
         this.crew.currentCity = record.trip[0];
+        this.excludedTrades = record.excludedTrades;
       }
     },
     deleteTripSave(tripId: string) {
@@ -145,10 +179,22 @@ export const useMapStore = defineStore({
       });
     },
     deleteTradeAction(stepCity: ITripStepCity, tradeAction: ITradeAction) {
+      // We build the initial excludeTradeItem that willbe stored
+      const excludedTradeItem = {
+        id: uuidv4(),
+        sellAction: null as unknown as ITradeAction,
+        buyAction: null as unknown as ITradeAction,
+      };
+
       // Delte trade action for first city
       const stepCityOneIdx = this.trip.findIndex(
         (obj) => obj.id === stepCity.id
       );
+
+      // We check tradeAction type and store it in the right property of the object
+      if (tradeAction.action === "sell")
+        excludedTradeItem.sellAction = tradeAction;
+      else excludedTradeItem.buyAction = tradeAction;
 
       const stepCityOneTradeActionIdx = this.trip[
         stepCityOneIdx
@@ -159,6 +205,12 @@ export const useMapStore = defineStore({
         stepCityOneTradeActionIdx <
           this.trip[stepCityOneIdx].tradeActions.length
       ) {
+        // We check tradeAction type and store it in the right property of the object
+        if (tradeAction.action === "sell")
+          excludedTradeItem.sellAction = tradeAction;
+        else excludedTradeItem.buyAction = tradeAction;
+
+        // We remove the trade action from the trip step
         this.trip[stepCityOneIdx].tradeActions.splice(
           stepCityOneTradeActionIdx,
           1
@@ -179,11 +231,53 @@ export const useMapStore = defineStore({
         stepCityTwoTradeActionIdx <
           this.trip[stepCityTwoIdx].tradeActions.length
       ) {
+        // We check tradeAction type and store it in the right property of the object
+        if (
+          this.trip[stepCityTwoIdx].tradeActions[stepCityTwoTradeActionIdx]
+            .action === "sell"
+        )
+          excludedTradeItem.sellAction =
+            this.trip[stepCityTwoIdx].tradeActions[stepCityTwoTradeActionIdx];
+        else
+          excludedTradeItem.buyAction =
+            this.trip[stepCityTwoIdx].tradeActions[stepCityTwoTradeActionIdx];
+
+        // We remove the trade action from the trip step
         this.trip[stepCityTwoIdx].tradeActions.splice(
           stepCityTwoTradeActionIdx,
           1
         );
       }
+
+      this.excludedTrades.push(excludedTradeItem);
+    },
+    removeMultipleExcludedTrades(excludedTrades: IExcludedTrade[]) {
+      excludedTrades.forEach((excludedTradeItem) => {
+        this.removeFromExcludedTrades(excludedTradeItem);
+      });
+    },
+    findExcludedTradesByTripStepCity(step: ITripStepCity) {
+      return this.excludedTrades.filter((excludedTrade) => {
+        return (
+          excludedTrade.sellAction.exchangeNode.id === step.id ||
+          excludedTrade.buyAction.exchangeNode.id === step.id
+        );
+      });
+    },
+    resetExcludedTrades() {
+      this.excludedTrades = [];
+    },
+    removeFromExcludedTrades(excludedTrade: IExcludedTrade) {
+      const tradeIndex = this.excludedTrades.findIndex(
+        (trade) => trade.id === excludedTrade.id
+      );
+
+      // If found, remove the trade from the excludedTrades array
+      if (tradeIndex !== -1) {
+        this.excludedTrades.splice(tradeIndex, 1);
+      }
+
+      this.calculateTradeActions();
     },
     calculateTradeActions() {
       this.resetTradeAction();
@@ -191,14 +285,14 @@ export const useMapStore = defineStore({
       for (let i = 0; i < this.trip.length; i++) {
         const currentCity = this.trip[i];
 
-        // Exclude ressrouces user don't want to trade
-        const currentCityProducedRessource = excludeResourcesFromArray(
+        // Exclude resources user doesn't want to trade
+        const currentCityProducedResource = excludeResourcesFromArray(
           currentCity.produces,
           this.excludedResourcesPicker[1]
         );
 
         // Check resources that the currentCity produces
-        currentCityProducedRessource.forEach((producedResource) => {
+        currentCityProducedResource.forEach((producedResource) => {
           // Look ahead in the trip to find cities that need this resource
           for (let j = i + 1; j < this.trip.length; j++) {
             const nextCity = this.trip[j];
@@ -218,33 +312,50 @@ export const useMapStore = defineStore({
               continue;
             }
 
-            // Exclude ressrouces user don't want to trade
-            const nextCityNeededRessource = excludeResourcesFromArray(
+            // Exclude resources user doesn't want to trade
+            const nextCityNeededResource = excludeResourcesFromArray(
               nextCity.needs,
               this.excludedResourcesPicker[1]
             );
 
             if (
-              nextCityNeededRessource.some(
+              nextCityNeededResource.some(
                 (obj) => obj.name === producedResource.name
               )
             ) {
-              // Record the trade action: Buy at currentCity, sell at nextCity
-              const tradeId = uuidv4();
-
-              currentCity.tradeActions.push({
-                id: tradeId,
+              // Generate a potential trade action pair
+              const potentialBuyAction = {
+                id: uuidv4(),
                 action: "buy",
                 ressource: producedResource,
                 exchangeNode: nextCity,
-              });
+              };
 
-              nextCity.tradeActions.push({
-                id: tradeId,
+              const potentialSellAction = {
+                id: potentialBuyAction.id,
                 action: "sell",
                 ressource: producedResource,
                 exchangeNode: currentCity,
+              };
+
+              // Check if this trade action is in the excludedTrades array
+              const isExcluded = this.excludedTrades.some((excludedTrade) => {
+                return (
+                  excludedTrade.buyAction.exchangeNode.id === nextCity.id &&
+                  excludedTrade.buyAction.ressource.name ===
+                    producedResource.name &&
+                  excludedTrade.sellAction.exchangeNode.id === currentCity.id &&
+                  excludedTrade.sellAction.ressource.name ===
+                    producedResource.name
+                );
               });
+
+              // If the trade action is not excluded, add it
+              if (!isExcluded) {
+                currentCity.tradeActions.push(potentialBuyAction);
+                nextCity.tradeActions.push(potentialSellAction);
+              }
+
               break; // Exit the loop after finding the first matching city
             }
           }
@@ -415,6 +526,7 @@ export const useMapStore = defineStore({
       "savedTrips",
       "crew",
       "excludedResourcesPicker",
+      "excludedTrades",
     ],
     serializer: {
       deserialize: parse,

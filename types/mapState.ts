@@ -1,4 +1,4 @@
-import type { ITripStepCity, ICity, ITripSave } from "./city";
+import type { ITripStepCity, ICity, ITripSave, IExcludedTrade } from "./city";
 import type { IRessource } from "./ressource";
 import type { ITag } from "./tags";
 
@@ -19,4 +19,5 @@ export interface MapStoreState {
   trip: ITripStepCity[];
   savedTrips: ITripSave[];
   excludedResourcesPicker: IRessource[][];
+  excludedTrades: IExcludedTrade[];
 }

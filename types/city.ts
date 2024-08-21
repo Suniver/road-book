@@ -19,6 +19,12 @@ export interface ITradeAction {
   exchangeNode: ITripStepCity; // It is the origin city if action is 'sell' or the target city if action is 'buy'
 }
 
+export interface IExcludedTrade {
+  id: string;
+  sellAction: ITradeAction;
+  buyAction: ITradeAction;
+}
+
 export interface ITripStepCity {
   id: string;
   name: string;
@@ -35,6 +41,7 @@ export interface ITripSave {
   id: string;
   name: string;
   trip: ITripStepCity[];
+  excludedTrades: IExcludedTrade[];
 }
 
 export const defaultCity: ICity = {

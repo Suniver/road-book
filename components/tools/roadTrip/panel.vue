@@ -151,7 +151,7 @@
             ></Button>
           </div>
           <Divider />
-          <!-- Exclude ressources section -->
+          <!-- Excluded ressources section -->
           <h4>
             Excluded Resources
             <i
@@ -178,6 +178,53 @@
                   {{ option.name }}
                 </template>
               </PickList>
+            </div>
+          </div>
+          <Divider />
+          <!-- Excluded one-time trades section -->
+          <h4>
+            Excluded Transactions from Road Trip
+            <i
+              class="i-tabler:help-circle-filled text-2xl"
+              v-tooltip.top="
+                'List of transactions you removed from your Road Trip. Here you can restore them.'
+              "
+            />
+            :
+          </h4>
+          <div class="flex flex-col gap-2">
+            <div
+              v-for="trade in mapStore.excludedTrades"
+              class="flex items-center gap-2 border-rounded border-solid border-1 border-stone-200 bg-stone-100 p-2"
+            >
+              <div
+                class="flex items-center gap-1 px-2 py-1 border-rounded bg-green-200"
+              >
+                <span class="capitalize px-2 py-1 border-rounded bg-green-100">
+                  {{ trade.buyAction.action }}:
+                </span>
+                {{ trade.buyAction.ressource.name }} in
+                {{ trade.sellAction.exchangeNode.name }}
+              </div>
+              <div class="flex items-center rounded-1/2 p-1 bg-stone-300">
+                <i
+                  class="i-tabler:arrow-narrow-right text-2xl text-stone-900"
+                ></i>
+              </div>
+              <div
+                class="flex items-center gap-1 px-2 py-1 border-rounded bg-amber-200"
+              >
+                <span class="capitalize px-2 py-1 border-rounded bg-amber-100"
+                  >{{ trade.sellAction.action }}:</span
+                >
+                {{ trade.sellAction.ressource.name }} in
+                {{ trade.buyAction.exchangeNode.name }}
+              </div>
+              <Button
+                label="Restore"
+                severity="info"
+                @click="mapStore.removeFromExcludedTrades(trade)"
+              />
             </div>
           </div>
           <Divider />
