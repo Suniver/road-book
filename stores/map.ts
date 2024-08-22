@@ -3,38 +3,42 @@ import { v4 as uuidv4 } from "uuid";
 import { stringify, parse } from "flatted";
 import { defineStore, acceptHMRUpdate } from "pinia";
 
+import { migrations } from "./migrations";
+
 import { tagList } from "~/data/tags";
 import { cities } from "../data/cities";
 import { resourceList } from "~/data/ressources";
 
-import type { ITag } from "~/types/tags";
-import type { IRessource } from "~/types/ressource";
 import {
   type ICity,
   type ITradeAction,
-  type ITripSave,
   type ITripStepCity,
 } from "~/types/city";
+import type { ITag } from "~/types/tags";
+import type { IRessource } from "~/types/ressource";
+import type { MapStoreState } from "~/types/mapState";
+
+type ImportState = MapStoreState & { appVersion?: string };
 
 export const useMapStore = defineStore({
   id: "mapStore",
-  state: () => ({
+  state: (): MapStoreState => ({
     mapInstance: null,
     showLabels: false,
     selectedToolboxLayout: "Both",
-    crewVirtue: undefined as number | undefined,
+    crewVirtue: undefined,
     crew: {
-      currentCity: undefined as ITripStepCity | undefined,
+      currentCity: undefined,
     },
     selectedAvailability: "has",
     searchedCities: [],
-    searchedResource: null as unknown as IRessource,
-    searchedTag: null as ITag | null,
+    searchedResource: null,
+    searchedTag: null,
     activeSearchTab: "0",
-    cities: cities as ICity[],
-    trip: [] as ITripStepCity[],
-    savedTrips: [] as ITripSave[],
-    excludedResourcesPicker: [] as IRessource[][],
+    cities: cities,
+    trip: [],
+    savedTrips: [],
+    excludedResourcesPicker: [],
   }),
   actions: {
     toggleShowLabels(value: boolean) {
@@ -247,6 +251,83 @@ export const useMapStore = defineStore({
         });
       }
     },
+    exportStateToJson() {
+      const state = this.$state;
+
+      // Exclude specific properties from the state
+      const propertiesToExclude = [
+        "mapInstance",
+        "showLabels",
+        "selectedToolboxLayout",
+        "activeSearchTab",
+      ];
+      const filteredState = _.omit(state, propertiesToExclude);
+
+      // Add the app version to the exported state
+      const appVersion = localStorage.getItem("app-version") || "1.0.0";
+      const stateWithVersion = {
+        ...filteredState,
+        appVersion,
+      };
+
+      const jsonState = stringify(stateWithVersion);
+      const blob = new Blob([jsonState], { type: "application/json" }); // Create a blob from the JSON string
+      const url = URL.createObjectURL(blob); // Create a URL for the blob
+      const a = document.createElement("a"); // Create an anchor element
+      a.href = url;
+      a.download = `dustland_delivery_road_book_app_${appVersion}.json`;
+      a.click(); // Trigger the download
+      URL.revokeObjectURL(url); // Revoke the object URL after download
+    },
+    importStateFromJson(file: File) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        if (e.target && e.target.result) {
+          const importedState = parse(e.target.result as string) as ImportState;
+          const convertedState = this.convertImportedState(importedState);
+
+          const propertiesToExclude = [
+            "mapInstance",
+            "showLabels",
+            "selectedToolboxLayout",
+            "activeSearchTab",
+          ];
+          const filteredState = _.omit(convertedState, propertiesToExclude);
+
+          this.$patch(filteredState);
+        }
+      };
+      reader.readAsText(file);
+    },
+    convertImportedState(importedState: ImportState): MapStoreState {
+      const currentVersion = localStorage.getItem("app-version") || "1.0.0";
+      const importedVersion = importedState.appVersion || "1.0.0";
+
+      const { migrations: versionMigrations, versionOrder } =
+        migrations.mapStore;
+
+      let state = { ...importedState };
+      let version = importedVersion;
+
+      while (version !== currentVersion) {
+        const migrate = versionMigrations[version];
+        if (migrate) {
+          state = migrate(state);
+          version = this.getNextVersion(version, versionOrder);
+        } else {
+          break;
+        }
+      }
+
+      return state;
+    },
+    getNextVersion(currentVersion: string, versionOrder: string[]): string {
+      const currentIndex = versionOrder.indexOf(currentVersion);
+      if (currentIndex === -1 || currentIndex === versionOrder.length - 1) {
+        return currentVersion;
+      }
+      return versionOrder[currentIndex + 1];
+    },
   },
   getters: {
     citySearchOptions: (state) => {
@@ -265,7 +346,7 @@ export const useMapStore = defineStore({
     },
     citySearchMarkers: (state) => {
       return state.cities.filter((city) =>
-        state.searchedCities.some((item) => item.code === city.name)
+        state.searchedCities.some((item) => item.name === city.name)
       );
     },
     resourceSearchMarkers: (state) => {
