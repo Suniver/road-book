@@ -1,6 +1,7 @@
 <template>
   <div>
     <ClientOnly>
+      <NewVersionModal />
       <Splitter style="height: 90vh">
         <SplitterPanel
           class="flex items-center justify-center"
