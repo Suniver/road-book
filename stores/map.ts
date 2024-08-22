@@ -35,7 +35,6 @@ export const useMapStore = defineStore({
     trip: [] as ITripStepCity[],
     savedTrips: [] as ITripSave[],
     excludedResourcesPicker: [] as IRessource[][],
-    excludedResources: [] as unknown as IRessource,
   }),
   actions: {
     toggleShowLabels(value: boolean) {
