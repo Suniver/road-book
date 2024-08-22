@@ -4,7 +4,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     localStorage.setItem("app-version", version);
   }
 
-  if (localStorage.getItem("app-version") === undefined) {
+  if (localStorage.getItem("app-version") === "undefined") {
     localStorage.setItem("app-version", version);
   }
 

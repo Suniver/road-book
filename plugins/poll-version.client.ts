@@ -24,6 +24,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   };
 
+  checkForNewVersion();
   // Polling every 5 minutes
   setInterval(checkForNewVersion, 300000);
 });
