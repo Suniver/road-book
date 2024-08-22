@@ -1,3 +1,3 @@
 export default defineEventHandler(async (event) => {
-  return { version: process.env.NEXT_PUBLIC_APP_VERSION };
+  return { version: process.env.APP_VERSION };
 });
