@@ -220,7 +220,11 @@ export const useMapStore = defineStore({
               this.excludedResourcesPicker[1]
             );
 
-            if (nextCityNeededRessource.includes(producedResource)) {
+            if (
+              nextCityNeededRessource.some(
+                (obj) => obj.name === producedResource.name
+              )
+            ) {
               // Record the trade action: Buy at currentCity, sell at nextCity
               const tradeId = uuidv4();
 
