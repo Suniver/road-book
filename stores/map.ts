@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { stringify, parse } from "flatted";
 import { defineStore, acceptHMRUpdate } from "pinia";
@@ -113,7 +114,7 @@ export const useMapStore = defineStore({
       const tripSave = {
         id: saveId,
         name: saveName,
-        trip: this.trip,
+        trip: _.cloneDeep(this.trip),
       };
 
       this.savedTrips.push(tripSave);
@@ -121,7 +122,7 @@ export const useMapStore = defineStore({
     loadTripSave(tripId: string) {
       const record = this.savedTrips.find((obj) => obj.id === tripId);
       if (record) {
-        this.trip = record.trip as unknown as ITripStepCity[];
+        this.trip = _.cloneDeep(record.trip) as unknown as ITripStepCity[];
         this.crew.currentCity = record.trip[0];
       }
     },
