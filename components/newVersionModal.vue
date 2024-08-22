@@ -17,6 +17,10 @@
           You can cancle this warning safely and export your data before
           refreshing manually.
         </p>
+        <p>
+          After you have refreshed the page manually you will see this message
+          again. Just click the "Reload" button when ready.
+        </p>
       </div>
       <div class="flex justify-end gap-2">
         <Button
