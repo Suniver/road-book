@@ -318,16 +318,8 @@ const showSettingsModal = ref(false);
 const showSavedTripsModal = ref(false);
 const showAboutModal = ref(false);
 
-const crewVirtue = ref(mapStore.crewVirtue);
+const crewVirtue = ref();
 const pickerResourceList = ref();
-if (mapStore.excludedResourcesPicker[0]) {
-  pickerResourceList.value = [
-    mapStore.excludedResourcesPicker[0],
-    mapStore.excludedResourcesPicker[1],
-  ];
-} else {
-  pickerResourceList.value = [resourceList, []];
-}
 
 const toggleSaveTripPopover = (event: any) => {
   saveTripPopoverRef.value.toggle(event);
@@ -370,7 +362,9 @@ const confirmResetTrip = (event: any) => {
 function saveSettings() {
   mapStore.crewVirtue = crewVirtue.value;
   mapStore.excludedResourcesPicker = pickerResourceList.value;
+
   mapStore.calculateTradeActions();
+
   showSettingsModal.value = false;
   toast.add({
     severity: "success",
@@ -411,6 +405,39 @@ function loadSavedTrip(tripId: string) {
     life: 3000,
   });
 }
+
+onMounted(() => {
+  crewVirtue.value = mapStore.crewVirtue;
+
+  if (mapStore.excludedResourcesPicker[0]) {
+    pickerResourceList.value = [
+      mapStore.excludedResourcesPicker[0],
+      mapStore.excludedResourcesPicker[1],
+    ];
+  } else {
+    pickerResourceList.value = [resourceList, []];
+  }
+});
+
+// Watch for changes in store crewVirtue and update local state
+watch(
+  () => mapStore.crewVirtue,
+  (newValue) => {
+    crewVirtue.value = newValue;
+  }
+);
+
+// Watch for changes in store excludedResourcesPicker and update local state
+watch(
+  () => mapStore.excludedResourcesPicker,
+  (newValue) => {
+    if (newValue[0]) {
+      pickerResourceList.value = [newValue[0], newValue[1]];
+    } else {
+      pickerResourceList.value = [resourceList, []];
+    }
+  }
+);
 </script>
 
 <style lang="scss"></style>
