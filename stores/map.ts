@@ -158,9 +158,11 @@ export const useMapStore = defineStore({
     loadTripSave(tripId: string) {
       const record = this.savedTrips.find((obj) => obj.id === tripId);
       if (record) {
-        this.trip = _.cloneDeep(record.trip) as unknown as ITripStepCity[];
+        this.trip = _.cloneDeep(record.trip) as ITripStepCity[];
         this.crew.currentCity = record.trip[0];
-        this.excludedTrades = record.excludedTrades;
+        this.excludedTrades = _.cloneDeep(
+          record.excludedTrades
+        ) as IExcludedTrade[];
       }
     },
     deleteTripSave(tripId: string) {
