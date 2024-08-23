@@ -92,9 +92,17 @@
       }"
     >
       <div class="flex flex-col gap-2 p-2">
-        <div v-for="(item, index) in mapStore.trip" :key="item.id">
-          <ToolsRoadTripItem :city="item" :index="index" />
-        </div>
+        <Draggable
+          v-model="mapStore.trip"
+          item-key="id"
+          animation="200"
+          @start="onDragStart"
+          @end="onDragEnd"
+          ><transition-group>
+            <div v-for="(item, index) in mapStore.trip" :key="item.id">
+              <ToolsRoadTripItem :city="item" :index="index" /></div
+          ></transition-group>
+        </Draggable>
       </div>
     </ScrollPanel>
 
@@ -348,9 +356,11 @@
 </template>
 
 <script lang="ts" setup>
+import { VueDraggableNext as Draggable } from "vue-draggable-next";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { resourceList } from "~/data/ressources";
+import { map } from "lodash";
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -451,6 +461,20 @@ function loadSavedTrip(tripId: string) {
     detail: "Trip successfully loaded.",
     life: 3000,
   });
+}
+
+function onDragStart(event: any) {
+  // Left here for reference
+}
+
+function onDragEnd(event: any) {
+  const step = mapStore.trip[event.newIndex];
+
+  const excludedTradesToRemove =
+    mapStore.findExcludedTradesByTripStepCity(step);
+  mapStore.removeMultipleExcludedTrades(excludedTradesToRemove);
+
+  mapStore.calculateTradeActions();
 }
 
 onMounted(() => {

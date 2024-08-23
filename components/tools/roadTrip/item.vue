@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="border-solid border-1 border-rounded border-blue-300"> -->
-  <div :class="cityFrameClass">
+  <div :class="cityFrameClass" class="mb-2 cursor-move">
     <!-- <div class="flex flex-col gap-1 p-x-2 p-y-1 bg-blue-100 border-rounded"> -->
     <div class="flex flex-col gap-1 p-x-2 p-y-1" :class="cityClass">
       <!-- First Line -->
