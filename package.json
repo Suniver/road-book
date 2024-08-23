@@ -23,7 +23,8 @@
     "pinia": "^2.2.1",
     "primevue": "^4.0.4",
     "uuid": "^10.0.0",
-    "vue": "latest"
+    "vue": "latest",
+    "vue-draggable-next": "^2.2.1"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.1.119",
